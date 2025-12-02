@@ -1,0 +1,707 @@
+/* Layout + typography */
+body {
+  margin: 0;
+  padding: 40px 0 40px;
+  background: linear-gradient(135deg, #faf7f3 0%, #f5f0ea 100%);
+  background-attachment: fixed;
+  font-family: "Georgia", serif;
+  min-height: 100vh;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Site Logo/Branding */
+.site-logo {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  z-index: 1000;
+  transition: opacity 0.2s ease;
+}
+
+.site-logo:hover {
+  opacity: 0.8;
+}
+
+.logo-icon {
+  width: 32px;
+  height: 32px;
+  display: block;
+}
+
+.logo-text {
+  font-family: "Georgia", serif;
+  font-size: 18px;
+  font-weight: 500;
+  color: #54657b;
+  letter-spacing: 0.02em;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: linear-gradient(
+      transparent 0,
+      transparent 31px,
+      rgba(0, 0, 0, 0.03) 32px
+    ),
+    linear-gradient(
+      90deg,
+      transparent 0,
+      transparent 31px,
+      rgba(0, 0, 0, 0.03) 32px
+    );
+  background-size: 32px 32px;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.container {
+  text-align: center;
+  max-width: 1000px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 20px;
+  flex: 1;
+}
+
+h1 {
+  font-size: 36px;
+  font-weight: 400;
+  color: #54657b;
+  margin-bottom: 6px;
+  animation: fadeIn 1s ease-out 0.3s backwards;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #7a7f87;
+  margin-top: 0;
+  margin-bottom: 24px;
+  animation: fadeIn 1s ease-out 0.6s backwards;
+}
+
+/* Main card (landing page) */
+.center-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+.envelope-wrapper {
+  position: relative;
+  width: 420px;
+  max-width: 80vw;
+  animation: floatIn 1s ease-out 0.7s backwards;
+}
+
+.envelope {
+  width: 100%;
+  display: block;
+  filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.15));
+  transform-origin: center center;
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+/* Envelope hover animation (landing page) */
+.envelope-wrapper:hover .envelope {
+  transform: translateY(-8px) rotate(-2deg);
+  filter: drop-shadow(0 26px 40px rgba(0, 0, 0, 0.2));
+}
+
+/* Start button (landing page + reused for other buttons) */
+.start-btn {
+  display: inline-block;
+  padding: 10px 28px;
+  border-radius: 999px;
+  border: 1px solid #c7bfb2;
+  background: #fdf9f3;
+  color: #5b4c3b;
+  text-decoration: none;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  text-transform: lowercase;
+  cursor: pointer;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  transition: background 0.2s ease, transform 0.15s ease,
+    box-shadow 0.2s ease;
+  animation: fadeIn 1s ease-out 0.9s backwards;
+}
+
+.start-btn:hover {
+  background: #f0e4d6;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 20px rgba(0, 0, 0, 0.12);
+}
+
+.start-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Footer */
+.footer {
+  position: fixed;
+  bottom: 20px;
+  inset-inline: 0;
+  text-align: center;
+  font-size: 12px;
+  color: #8d8a84;
+  letter-spacing: 0.02em;
+}
+
+/* Site Footer - Navigation Links */
+.site-footer {
+  width: 100%;
+  margin-top: 60px;
+  padding: 20px 0;
+  text-align: center;
+  border-top: 1px solid #e0dad0;
+}
+
+.footer-links {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.footer-links a {
+  font-size: 13px;
+  color: #7a7570;
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.footer-links a:hover {
+  color: #54657b;
+}
+
+.footer-copyright {
+  font-size: 12px;
+  color: #9a9490;
+  margin-top: 8px;
+}
+
+/* Intro animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes floatIn {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Form page: card + inputs */
+.form-card {
+  margin: 0 auto;
+  max-width: 520px;
+  padding: 24px 28px 32px;
+  border-radius: 22px;
+  background: #fdf9f3;
+  box-shadow: 0 14px 30px rgba(0, 0, 0, 0.08);
+  animation: fadeIn 0.8s ease-out 0.3s backwards;
+}
+
+.field-group {
+  margin-bottom: 18px;
+  text-align: left;
+}
+
+label {
+  display: block;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: #5d5348;
+  margin-bottom: 4px;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  font-family: "Georgia", serif;
+  font-size: 14px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #d7cfc2;
+  background: #fbf7f1;
+  color: #4d4740;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease,
+    background 0.16s ease;
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+  color: #b1aaa1;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  border-color: #c1a98b;
+  box-shadow: 0 0 0 1px rgba(193, 169, 139, 0.5);
+  background: #fefaf5;
+}
+
+.form-textarea {
+  min-height: 160px;
+  resize: vertical;
+}
+
+/* Primary button on form */
+.primary-btn {
+  margin-top: 10px;
+  padding: 10px 26px;
+  border-radius: 999px;
+  border: 1px solid #c7bfb2;
+  background: #fdf9f3;
+  color: #5b4c3b;
+  text-decoration: none;
+  font-size: 14px;
+  letter-spacing: 0.03em;
+  text-transform: lowercase;
+  cursor: pointer;
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.08);
+  transition: background 0.2s ease, transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+.primary-btn:hover {
+  background: #f0e4d6;
+  transform: translateY(-2px);
+  box-shadow: 0 14px 22px rgba(0, 0, 0, 0.12);
+}
+
+.primary-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Sent page postcard image */
+.sent-postcard-wrapper {
+  margin: 24px auto 0;
+  max-width: 460px;
+  animation: floatIn 0.8s ease-out 0.4s backwards;
+}
+
+.sent-postcard {
+  width: 100%;
+  display: block;
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.12));
+}
+
+/* Reusable small text link */
+.view-link {
+  display: block;
+  margin: 32px auto 0;
+  font-size: 14px;
+  text-align: center;
+  color: #3d3d3d;
+  text-decoration: underline;
+  cursor: pointer;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.view-link:hover {
+  opacity: 1;
+}
+
+/* Sent letters page */
+.divider-line {
+  margin: 12px auto 32px;
+  max-width: 70%;
+  height: 1px;
+  background-color: #d9d4cc;
+}
+
+.letters-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 26px 36px;
+  margin-top: 24px;
+
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 10px;
+}
+
+
+/* Each envelope card */
+.sent-letter-card {
+  display: inline-block;
+  position: relative;
+  width: 230px;
+  cursor: pointer;
+  transform-style: preserve-3d;
+}
+
+/* Wrapper: no visible background, the image carries the shadow */
+.sent-letter-image-wrapper {
+  position: relative;
+  width: 100%;
+  height: auto;
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.sent-letter-image {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 10px 18px rgba(0, 0, 0, 0.12));
+  transition: filter 0.18s ease, opacity 0.18s ease;
+}
+
+/* Hover tilt + lift */
+.sent-letter-card:hover .sent-letter-image-wrapper {
+  transform: translateY(-6px) rotate(-1.5deg);
+}
+
+.sent-letter-card:hover .sent-letter-image {
+  filter: drop-shadow(0 18px 30px rgba(0, 0, 0, 0.16));
+}
+
+/* Subtle stagger so envelopes aren't in a perfect line */
+.sent-letter-card:nth-child(2n) {
+  margin-top: 18px;
+}
+
+.sent-letter-card:nth-child(3n) {
+  margin-top: 32px;
+}
+
+.sent-letter-card:nth-child(5n) {
+  margin-top: 10px;
+}
+
+/* Info text under "Sent Letters" */
+.sent-info {
+  max-width: 560px;
+  margin: 6px auto 20px;
+  font-size: 13px;
+  color: #777;
+}
+
+/* Locked visual state */
+.sent-letter-card.locked .sent-letter-image {
+  opacity: 0.45;
+}
+
+/* Lock badge for locked letters */
+.sent-letter-card.locked .sent-letter-image-wrapper::after {
+  content: "🔒";
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  font-size: 18px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 999px;
+  padding: 4px 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.18);
+}
+
+/* Tiny shake on click for locked envelopes */
+.sent-letter-card.locked:active .sent-letter-image-wrapper {
+  animation: locked-shake 0.3s ease;
+}
+
+@keyframes locked-shake {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-4px);
+  }
+  40% {
+    transform: translateX(4px);
+  }
+  60% {
+    transform: translateX(-3px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* Floating tooltip for sent letters */
+.letter-tooltip {
+  position: fixed;
+  pointer-events: none;
+  max-width: 260px;
+  background: #fbf7f1;
+  border-radius: 12px;
+  padding: 10px 14px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  font-size: 13px;
+  color: #555;
+  z-index: 1000;
+  min-width: 220px;
+  text-align: left;
+}
+
+.letter-tooltip-title {
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #4b5667;
+}
+
+.letter-tooltip-line {
+  margin: 2px 0;
+}
+
+.letter-tooltip-line.emphasize {
+  margin-top: 4px;
+  font-weight: 600;
+}
+
+/* Letter view page */
+
+.hidden {
+  display: none;
+}
+
+.letter-view-container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.letter-locked-card,
+.letter-open-card,
+.share-link-card {
+  margin-top: 24px;
+  padding: 20px 24px;
+  border-radius: 18px;
+  background: #f8f4ee;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.04);
+}
+
+.letter-locked-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.letter-locked-image {
+  max-width: 260px;
+  margin-bottom: 12px;
+}
+
+.letter-locked-line {
+  margin: 2px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.letter-open-header {
+  margin-bottom: 12px;
+}
+
+.letter-open-meta {
+  margin: 2px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.letter-open-body {
+  margin-top: 8px;
+}
+
+.letter-open-message {
+  white-space: pre-wrap;
+  line-height: 1.6;
+  font-size: 15px;
+  color: #333;
+  margin-bottom: 12px;
+}
+
+.letter-open-signature {
+  font-style: italic;
+  text-align: right;
+  color: #555;
+}
+
+/* Share link area */
+
+.share-label {
+  font-size: 14px;
+  margin-bottom: 6px;
+  color: #555;
+}
+
+.share-link-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.share-input {
+  flex: 1;
+  font-size: 13px;
+}
+
+.secondary-btn {
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid #c7bfb2;
+  background: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.secondary-btn:hover {
+  background: #f0e8dc;
+}
+
+.share-helper {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #888;
+}
+
+/* Small helper text under fields */
+.field-helper {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #5a5a5a;
+}
+
+/* class to manually trigger shake animation */
+.shake-now {
+  animation: locked-shake 0.3s ease;
+}
+
+button,
+.primary-btn,
+.secondary-btn {
+  font-family: "Georgia", serif !important;
+}
+
+/* Envelope image styling for letter view */
+.open-letter-envelope {
+  display: block;
+  margin: 0 auto;
+  width: 340px;
+  max-width: 90%;
+  transform: rotate(-2deg);
+  filter: drop-shadow(0 12px 25px rgba(0,0,0,0.18));
+  animation: envelopeEnter 0.6s ease-out forwards;
+}
+
+@keyframes envelopeEnter {
+  from {
+    opacity: 0;
+    transform: translateY(20px) rotate(-2deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(-2deg);
+  }
+}
+
+/* Letter content box */
+.letter-content-box {
+  margin: 40px auto 0;
+  max-width: 700px;
+  background: #fbf7f1;
+  padding: 40px 50px;
+  border-radius: 14px;
+  box-shadow: 0 15px 32px rgba(0,0,0,0.10);
+  animation: letterReveal 0.6s ease-out forwards;
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+@keyframes letterReveal {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Text formatting for letter */
+.letter-message {
+  font-size: 18px;
+  line-height: 1.8;
+  text-align: left;
+  color: #5a5550;
+  white-space: pre-wrap;
+}
+
+.letter-meta {
+  font-size: 14px;
+  margin-bottom: 16px;
+  opacity: 0.7;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Copy button fix */
+.primary-btn, .secondary-btn, button {
+  font-family: inherit !important;
+}
+
+.envelope-display-wrapper {
+  background: transparent !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+/* Remove any card/panel behind the envelope on letter_view.html */
+.letter-view-container > div:first-of-type,
+.letter-view-container .envelope-wrapper,
+.letter-view-container .letter-card {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+/* Remove the card background / shadow that appears under the envelope */
+.letter-locked-card {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.site-footer {
+    margin-top: 150px;
+}

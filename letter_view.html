@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View your letter</title>
+  <link rel="icon" type="image/png" href="images/seal_favicon.png" />
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Logo/Brand -->
+  <nav aria-label="Main navigation">
+    <a href="index.html" class="site-logo" aria-label="Quiet Letters home page">
+      <img src="images/seal_favicon.png" alt="Red wax seal with a heart" class="logo-icon" />
+      <span class="logo-text">Quiet Letters</span>
+    </a>
+  </nav>
+
+  <main>
+    <div class="container letter-view-container">
+      <header>
+        <h1>A letter to you, from your past self</h1>
+        <p class="subtitle" id="letterStatusText"></p>
+      </header>
+
+      <section aria-label="Letter envelope">
+        <!-- Envelope image -->
+        <img
+          src="images/Closed_Letter.png"
+          alt="Sealed envelope containing your letter from the past"
+          class="open-letter-envelope"
+          id="envelopeImage"
+        />
+
+        <!-- Locked state info (only used when letter isn't ready yet) -->
+        <div id="lockedNotice" class="letter-locked-card hidden">
+          <p class="letter-locked-line" id="lockedCountdown"></p>
+          <p class="letter-locked-line" id="lockedOpenDate"></p>
+        </div>
+      </section>
+
+      <section aria-label="Letter content" id="letterContentSection">
+        <!-- Open letter contents -->
+        <div id="openContent" class="letter-content-box hidden">
+          <div class="letter-meta">
+            Opens on <span id="openDateLabel"></span><br>
+            Written on <span id="writtenDateLabel"></span>
+          </div>
+
+          <div id="letterMessage" class="letter-message"></div>
+          <p id="signatureText" class="letter-open-signature"></p>
+        </div>
+      </section>
+
+      <section aria-label="Share letter link">
+        <!-- Shareable link -->
+        <div class="share-link-card">
+          <label for="shareUrlInput" class="share-label">Save this link (same browser only):</label>
+          <div class="share-link-row" id="shareLinkRow">
+            <input
+              type="text"
+              id="shareUrlInput"
+              class="form-input share-input"
+              readonly
+              aria-label="Shareable link to this letter"
+            />
+            <button id="copyLinkBtn" class="secondary-btn" aria-label="Copy link to clipboard">Copy</button>
+          </div>
+          <!-- helper text removed; explanation will appear only as tooltip -->
+          <p class="share-helper">&nbsp;</p>
+        </div>
+
+        <a href="view.html" class="view-link">← back to sent letters</a>
+      </section>
+    </div>
+  </main>
+
+  <!-- Tooltip for share-link explanation -->
+  <div id="shareTooltip" class="letter-tooltip hidden" role="tooltip"></div>
+
+  <script>
+    // --- helpers ---
+
+    function getQueryParam(name) {
+      const params = new URLSearchParams(window.location.search);
+      return params.get(name);
+    }
+
+    function getLetters() {
+      const raw = localStorage.getItem("sentLetters");
+      if (!raw) return [];
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function computeTiming(letter) {
+      const openAfterDays =
+        typeof letter.openAfterDays === "number"
+          ? letter.openAfterDays
+          : parseInt(letter.openAfterDays, 10);
+
+      const baseDateStr = letter.createdAt || letter.date;
+      const baseDate = new Date(baseDateStr);
+      const writtenDate = new Date(letter.date || baseDateStr);
+
+      const isBaseValid = !isNaN(baseDate);
+      const isWrittenValid = !isNaN(writtenDate);
+
+      const writtenLabel = isWrittenValid
+        ? writtenDate.toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+          })
+        : (letter.date || "Unknown date");
+
+      const safeDelay = Number.isNaN(openAfterDays) ? 0 : openAfterDays;
+
+      let openDate = null;
+      let openLabel = "Ready to open";
+      let daysLeft = 0;
+
+      if (isBaseValid) {
+        openDate = new Date(
+          baseDate.getTime() + safeDelay * 24 * 60 * 60 * 1000
+        );
+        const now = new Date();
+        const msDiff = openDate - now;
+        daysLeft = Math.ceil(msDiff / (1000 * 60 * 60 * 24));
+
+        openLabel =
+          "Opens on " +
+          openDate.toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+          });
+      }
+
+      const isLocked = openDate && daysLeft > 0;
+
+      return {
+        writtenLabel,
+        openLabel,
+        openDate,
+        isLocked,
+        daysLeft
+      };
+    }
+
+    function updateCountdown(openDate, targetEl) {
+      if (!openDate || !targetEl) return;
+
+      const now = new Date();
+      const msDiff = openDate - now;
+
+      if (msDiff <= 0) {
+        targetEl.textContent = "Your letter is ready to open.";
+        return;
+      }
+
+      const days = Math.floor(msDiff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((msDiff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((msDiff / (1000 * 60)) % 60);
+
+      targetEl.textContent =
+        `Opens in ${days}d ${hours}h ${minutes}m`;
+    }
+
+    // tooltip positioning helper (same idea as view.html)
+    function updateTooltipPosition(event, tooltip) {
+      const offsetX = 18;
+      const offsetY = 18;
+      tooltip.style.left = event.clientX + offsetX + "px";
+      tooltip.style.top = event.clientY + offsetY + "px";
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const idStr = getQueryParam("id");
+      const index = parseInt(idStr, 10);
+
+      const statusText = document.getElementById("letterStatusText");
+      const lockedNotice = document.getElementById("lockedNotice");
+      const openContent = document.getElementById("openContent");
+      const envelopeImg = document.getElementById("envelopeImage");
+
+      if (Number.isNaN(index)) {
+        statusText.textContent = "Letter not found.";
+        return;
+      }
+
+      const letters = getLetters();
+      const letter = letters[index];
+
+      if (!letter) {
+        statusText.textContent = "Letter not found.";
+        return;
+      }
+
+      // Fill share URL
+      const shareInput = document.getElementById("shareUrlInput");
+      shareInput.value = window.location.href;
+
+      // Timing
+      const { writtenLabel, openLabel, openDate, isLocked } =
+        computeTiming(letter);
+
+      const openDateLabel = document.getElementById("openDateLabel");
+      const writtenDateLabel = document.getElementById("writtenDateLabel");
+      const signatureText = document.getElementById("signatureText");
+      const messageEl = document.getElementById("letterMessage");
+      const lockedCountdown = document.getElementById("lockedCountdown");
+      const lockedOpenDate = document.getElementById("lockedOpenDate");
+
+      openDateLabel.textContent = openLabel.replace("Opens on ", "");
+      writtenDateLabel.textContent = writtenLabel;
+
+      messageEl.textContent = letter.message || "";
+      signatureText.textContent = letter.signature
+        ? "— " + letter.signature
+        : "";
+
+      if (isLocked) {
+        statusText.textContent = "This letter is still sealed.";
+        lockedNotice.classList.remove("hidden");
+        openContent.classList.add("hidden");
+
+        if (openDate) {
+          lockedOpenDate.textContent = openLabel;
+          updateCountdown(openDate, lockedCountdown);
+          setInterval(
+            () => updateCountdown(openDate, lockedCountdown),
+            60 * 1000
+          );
+        }
+
+        envelopeImg.style.opacity = "0.85";
+      } else {
+        statusText.textContent = "Your letter is ready to read.";
+        lockedNotice.classList.add("hidden");
+        openContent.classList.remove("hidden");
+        envelopeImg.style.opacity = "1";
+      }
+
+      // Copy button
+      const copyBtn = document.getElementById("copyLinkBtn");
+      copyBtn.addEventListener("click", () => {
+        shareInput.select();
+        shareInput.setSelectionRange(0, 99999);
+        try {
+          document.execCommand("copy");
+          copyBtn.textContent = "Copied!";
+          setTimeout(() => (copyBtn.textContent = "Copy"), 1500);
+        } catch (e) {
+          console.error("Copy failed:", e);
+        }
+      });
+
+      // Hover tooltip for share link
+      const shareRow = document.getElementById("shareLinkRow");
+      const shareTooltip = document.getElementById("shareTooltip");
+      const shareText =
+        "This link only works on this device & browser because your letters are stored locally.";
+
+      shareRow.addEventListener("mouseenter", (e) => {
+        shareTooltip.textContent = shareText;
+        shareTooltip.classList.remove("hidden");
+        updateTooltipPosition(e, shareTooltip);
+      });
+
+      shareRow.addEventListener("mousemove", (e) => {
+        updateTooltipPosition(e, shareTooltip);
+      });
+
+      shareRow.addEventListener("mouseleave", () => {
+        shareTooltip.classList.add("hidden");
+      });
+    });
+  </script>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <nav aria-label="Footer navigation">
+      <div class="footer-links">
+        <!-- <a href="about.html">About</a> -->
+        <a href="https://kaitlyn.zip/" target="_blank" rel="noopener">My Website</a>
+        <a href="https://www.linkedin.com/in/kaitlyn-jang-9147071a1/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </nav>
+    <div class="footer-copyright">
+      © 2025 Quiet Letters
+    </div>
+  </footer>
+
+</body>
+</html>

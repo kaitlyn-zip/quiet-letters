@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Personalize your letter</title>
+  <link rel="icon" type="image/png" href="images/seal_favicon.png" />
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Logo/Brand -->
+  <nav aria-label="Main navigation">
+    <a href="index.html" class="site-logo" aria-label="Quiet Letters home page">
+      <img src="images/seal_favicon.png" alt="Red wax seal with a heart" class="logo-icon" />
+      <span class="logo-text">Quiet Letters</span>
+    </a>
+  </nav>
+
+  <main>
+    <div class="container">
+      <header>
+        <h1>Personalize your letter</h1>
+        <p class="subtitle">
+            Write something you'd like your future self to know.
+            <br>
+            Your information is completely private and is stored locally.
+        </p>
+      </header>
+
+      <section aria-label="Letter form">
+        <div class="form-card">
+          <form id="letterForm">
+            <!-- Name -->
+            <div class="field-group">
+              <label for="name">Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                class="form-input"
+                placeholder="Click to type"
+              >
+            </div>
+
+            <!-- Date -->
+            <div class="field-group">
+              <label for="date">Date</label>
+              <input
+                type="text"
+                id="date"
+                name="date"
+                class="form-input"
+                placeholder="Click to type"
+              >
+            </div>
+
+            <!-- Open after X days -->
+            <div class="field-group">
+              <label for="openAfterDays">When should this letter open?</label>
+              <input
+                type="number"
+                id="openAfterDays"
+                name="openAfterDays"
+                class="form-input"
+                min="0"
+                step="1"
+                placeholder="e.g. 365"
+                aria-describedby="openAfterHelp"
+              >
+              <p id="openAfterHelp" class="field-helper">
+                Enter how many days from today this letter should unlock
+                (for example: <strong>0</strong> to see it now, <strong>30</strong> for a month).
+              </p>
+            </div>
+
+            <!-- Message -->
+            <div class="field-group">
+              <label for="message">Message</label>
+              <textarea
+                id="message"
+                name="message"
+                class="form-textarea"
+                placeholder="Write a message for your future self here..."
+              ></textarea>
+            </div>
+
+            <!-- Signature -->
+            <div class="field-group">
+              <label for="signature">Signature</label>
+              <input
+                type="text"
+                id="signature"
+                name="signature"
+                class="form-input"
+                placeholder="Click to type"
+              >
+            </div>
+
+            <button type="submit" class="primary-btn">
+              Save and continue
+            </button>
+          </form>
+        </div>
+        <br>
+        <a href="view.html" class="view-link">view sent letters</a>
+      </section>
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <nav aria-label="Footer navigation">
+      <div class="footer-links">
+        <!-- <a href="about.html">About</a> -->
+        <a href="https://kaitlyn.zip/" target="_blank" rel="noopener">My Website</a>
+        <a href="https://www.linkedin.com/in/kaitlyn-jang-9147071a1/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </nav>
+    <div class="footer-copyright">
+      © 2025 Quiet Letters
+    </div>
+  </footer>
+
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const dateInput = document.getElementById("date");
+      const openAfterInput = document.getElementById("openAfterDays");
+
+      // Auto-fill today's date if empty
+      if (dateInput && !dateInput.value.trim()) {
+        const today = new Date().toLocaleDateString("en-US", {
+          month: "long",
+          day: "numeric",
+          year: "numeric"
+        });
+        dateInput.value = today;
+      }
+
+      // Set a nice default for open-after days (1 year)
+      const defaultOpenAfterDays = 365;
+      if (openAfterInput && !openAfterInput.value.trim()) {
+        openAfterInput.value = defaultOpenAfterDays;
+      }
+
+      const form = document.getElementById("letterForm");
+      if (!form) return;
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        // Clean + normalize openAfterDays
+        const rawOpenAfter = parseInt(form.openAfterDays.value, 10);
+        let safeOpenAfterDays = Number.isNaN(rawOpenAfter)
+          ? defaultOpenAfterDays
+          : rawOpenAfter;
+
+        // No negative values
+        if (safeOpenAfterDays < 0) safeOpenAfterDays = 0;
+
+        const data = {
+          name: form.name.value.trim(),
+          date: form.date.value.trim(),
+          message: form.message.value.trim(),
+          signature: form.signature.value.trim(),
+          createdAt: new Date().toISOString(),
+          openAfterDays: safeOpenAfterDays
+        };
+
+        // Pull existing letters from localStorage
+        const existing = localStorage.getItem("sentLetters");
+        let letters = [];
+        if (existing) {
+          try {
+            letters = JSON.parse(existing);
+            if (!Array.isArray(letters)) letters = [];
+          } catch {
+            letters = [];
+          }
+        }
+
+        // Add the new letter
+        letters.push(data);
+        localStorage.setItem("sentLetters", JSON.stringify(letters));
+
+        // Redirect to confirmation page
+        window.location.href = "sent.html";
+      });
+    });
+  </script>
+
+</body>
+</html>

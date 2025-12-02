@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>View your sent letters</title>
+  <link rel="icon" type="image/png" href="images/seal_favicon.png" />
+  <link rel="stylesheet" href="css/styles.css">
+  
+  <style>
+    /* Start button */
+    .start-btn {
+      display: inline-block;
+      margin-top: 20px;
+      background: #fbf7f1;
+      padding: 10px 28px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: #444;
+      font-size: 15px;
+      border: 1px solid #e5dfd6;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+      transition: all 0.15s ease;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 14px rgba(0,0,0,0.12);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Logo/Brand -->
+  <nav aria-label="Main navigation">
+    <a href="index.html" class="site-logo" aria-label="Quiet Letters home page">
+      <img src="images/seal_favicon.png" alt="Red wax seal with a heart" class="logo-icon" />
+      <span class="logo-text">Quiet Letters</span>
+    </a>
+  </nav>
+
+  <main>
+    <div class="container">
+      <header>
+        <h1>Sent Letters</h1>
+
+        <p class="subtitle sent-info">
+          Your letters are stored only in this browser using local storage.
+          <br>
+          If you clear cookies or site data for this page, all saved letters will be permanently deleted.
+        </p>
+      </header>
+
+      <div class="divider-line"></div>
+
+      <section aria-label="Your sent letters">
+        <div id="lettersGrid" class="letters-grid"></div>
+
+        <br><br><br>
+        <a href="letter.html" class="start-btn" aria-label="Write another letter">
+          write another letter
+        </a>
+      </section>
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <nav aria-label="Footer navigation">
+      <div class="footer-links">
+        <!-- <a href="about.html">About</a> -->
+        <a href="https://kaitlyn.zip/" target="_blank" rel="noopener">My Website</a>
+        <a href="https://www.linkedin.com/in/kaitlyn-jang-9147071a1/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </nav>
+    <div class="footer-copyright">
+      © 2025 Quiet Letters
+    </div>
+  </footer>
+
+  <!-- Tooltip that follows the mouse -->
+  <div id="letterTooltip" class="letter-tooltip hidden" role="tooltip"></div>
+
+  <script>
+    /* ------------------------------
+       HELPERS
+    ------------------------------ */
+
+    function getLetters() {
+      const raw = localStorage.getItem("sentLetters");
+      if (!raw) return [];
+      try {
+        const parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch {
+        return [];
+      }
+    }
+
+    function getOpenInfo(letter) {
+      const writtenStr = letter.date;
+      const openAfterDays =
+        typeof letter.openAfterDays === "number"
+          ? letter.openAfterDays
+          : parseInt(letter.openAfterDays, 10);
+
+      const baseDateStr = letter.createdAt || letter.date;
+      const baseDate = new Date(baseDateStr);
+      const writtenDate = new Date(writtenStr || baseDateStr);
+
+      const isBaseValid = !isNaN(baseDate);
+      const isWrittenValid = !isNaN(writtenDate);
+
+      const writtenLabel = isWrittenValid
+        ? writtenDate.toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+          })
+        : (writtenStr || "Unknown date");
+
+      const daysDelay = Number.isNaN(openAfterDays) ? 0 : openAfterDays;
+
+      let openDate = null;
+      let openLabel = "Ready to open";
+      let daysLeft = 0;
+
+      if (isBaseValid) {
+        openDate = new Date(
+          baseDate.getTime() + daysDelay * 24 * 60 * 60 * 1000
+        );
+
+        const now = new Date();
+        const msDiff = openDate - now;
+        daysLeft = Math.ceil(msDiff / (1000 * 60 * 60 * 24));
+
+        openLabel =
+          "Open on " +
+          openDate.toLocaleDateString("en-US", {
+            month: "long",
+            day: "numeric",
+            year: "numeric"
+          });
+      }
+
+      const isLocked = daysLeft > 0;
+      const openInText = isLocked ? `open in ${daysLeft}d` : "ready to open";
+
+      return {
+        writtenLabel,
+        openLabel,
+        openInText,
+        isLocked
+      };
+    }
+
+    /* ------------------------------
+       TOOLTIP POSITIONING
+    ------------------------------ */
+    function updateTooltipPosition(event, tooltip) {
+      const offsetX = 18;
+      const offsetY = 18;
+      tooltip.style.left = event.clientX + offsetX + "px";
+      tooltip.style.top = event.clientY + offsetY + "px";
+    }
+
+    /* ------------------------------
+       MAIN RENDERING
+    ------------------------------ */
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const grid = document.getElementById("lettersGrid");
+      const tooltip = document.getElementById("letterTooltip");
+      const letters = getLetters();
+
+      if (!letters.length) {
+        grid.innerHTML = `<p class="subtitle">No letters have been sent yet.</p>`;
+        return;
+      }
+
+      letters.forEach((letter, index) => {
+        const { writtenLabel, openLabel, openInText, isLocked } =
+          getOpenInfo(letter);
+
+        const card = document.createElement("a");
+        card.className = "sent-letter-card" + (isLocked ? " locked" : "");
+        card.href = `letter_view.html?id=${index}`;
+        card.style.textDecoration = "none";
+
+        // Tooltip data
+        card.dataset.letterIndex = index + 1;
+        card.dataset.written = writtenLabel;
+        card.dataset.openLabel = openLabel;
+        card.dataset.openIn = openInText;
+
+        card.innerHTML = `
+          <div class="sent-letter-image-wrapper">
+            <img
+              src="images/Closed_Letter.png"
+              alt="Closed envelope representing a previously sent letter"
+              class="sent-letter-image"
+            />
+          </div>
+        `;
+
+        grid.appendChild(card);
+
+        /* ------------------------------
+           BLOCK NAVIGATION ON LOCKED LETTERS
+        ------------------------------ */
+        card.addEventListener("click", (e) => {
+          if (card.classList.contains("locked")) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            // shake animation
+            const wrapper = card.querySelector(".sent-letter-image-wrapper");
+            wrapper.classList.remove("shake-now");
+            void wrapper.offsetWidth; // restart animation
+            wrapper.classList.add("shake-now");
+          }
+        });
+
+        /* ------------------------------
+           TOOLTIP EVENTS
+        ------------------------------ */
+        card.addEventListener("mouseenter", (e) => {
+          tooltip.innerHTML = `
+            <div class="letter-tooltip-title">Letter ${card.dataset.letterIndex}</div>
+            <div class="letter-tooltip-line">Written: ${card.dataset.written}</div>
+            <div class="letter-tooltip-line">${card.dataset.openLabel}</div>
+            <div class="letter-tooltip-line emphasize">${card.dataset.openIn}</div>
+          `;
+          tooltip.classList.remove("hidden");
+          updateTooltipPosition(e, tooltip);
+        });
+
+        card.addEventListener("mousemove", (e) => {
+          updateTooltipPosition(e, tooltip);
+        });
+
+        card.addEventListener("mouseleave", () => {
+          tooltip.classList.add("hidden");
+        });
+      });
+    });
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Quiet Letters</title>
+  <link rel="icon" type="image/png" href="images/seal_favicon.png" />
+
+  <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Roboto Mono (for timestamp) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400&display=swap"
+    rel="stylesheet"
+  />
+
+  <style>
+    /* Add top padding to h1 */
+    h1 {
+      padding-top: 40px;
+    }
+
+    /* Tagline underneath subtitle */
+    .tagline {
+      margin-top: 6px;
+      margin-bottom: 28px;
+      font-size: 14px;
+      color: #7a7f87;
+    }
+
+    /* Envelope wrapper center alignment */
+    .center-block {
+      text-align: center;
+      margin-top: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .envelope-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      perspective: 1000px;
+      margin-bottom: 20px;
+    }
+
+    .envelope {
+      width: 450px;
+      display: block;
+      filter: drop-shadow(0 12px 25px rgba(0,0,0,0.18));
+      transition: transform 0.2s ease;
+    }
+
+    /* Start button */
+    .start-btn {
+      display: inline-block;
+      margin-top: 20px;
+      background: #fbf7f1;
+      padding: 10px 28px;
+      border-radius: 20px;
+      text-decoration: none;
+      color: #444;
+      font-size: 15px;
+      border: 1px solid #e5dfd6;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
+      transition: all 0.15s ease;
+    }
+
+    .start-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 14px rgba(0,0,0,0.12);
+    }
+
+</style>
+</head>
+
+<body>
+
+  <!-- Logo/Brand Navigation -->
+  <nav aria-label="Main navigation">
+    <a href="index.html" class="site-logo" aria-label="Quiet Letters home page">
+      <img src="images/seal_favicon.png" alt="Red wax seal with a heart" class="logo-icon" />
+      <span class="logo-text">Quiet Letters</span>
+    </a>
+  </nav>
+
+  <main>
+    <div class="container">
+      <header>
+        <h1>Write a letter to yourself, in the future</h1>
+        <p class="subtitle">Open in 1 year, 5 years, or beyond</p>
+      </header>
+
+      <section aria-label="Get started">
+        <div class="center-block">
+          <div class="envelope-wrapper">
+            <img
+              src="images/Closed_Letter.png"
+              alt="Closed envelope with wax seal ready to be opened"
+              class="envelope"
+            />
+          </div>
+
+          <a href="letter.html" class="start-btn" aria-label="Start writing your letter">start</a>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <nav aria-label="Footer navigation">
+      <div class="footer-links">
+        <!-- <a href="about.html">About</a> -->
+        <a href="https://kaitlyn.zip/" target="_blank" rel="noopener">My Website</a>
+        <a href="https://www.linkedin.com/in/kaitlyn-jang-9147071a1/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </nav>
+    <div class="footer-copyright">
+      © 2025 Quiet Letters
+    </div>
+  </footer>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      /* ---------- Envelope tilt animation ---------- */
+      const wrapper = document.querySelector(".envelope-wrapper");
+      const envelope = document.querySelector(".envelope");
+
+      if (wrapper && envelope) {
+        wrapper.addEventListener("mousemove", (event) => {
+          const rect = wrapper.getBoundingClientRect();
+          const x = event.clientX - rect.left - rect.width / 2;
+          const y = event.clientY - rect.top - rect.height / 2;
+
+          const rotateY = x / 20;
+          const rotateX = -y / 20;
+
+          envelope.style.transform =
+            `rotateY(${rotateY}deg) rotateX(${rotateX}deg) translateY(-4px)`;
+        });
+
+        wrapper.addEventListener("mouseleave", () => {
+          envelope.style.transform =
+            "rotateY(0deg) rotateX(0deg) translateY(0)";
+        });
+      }
+    });
+  </script>
+</body>
+</html>
