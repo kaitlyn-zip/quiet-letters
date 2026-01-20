@@ -5,6 +5,15 @@
   <title>Quiet Letters</title>
   <link rel="icon" type="image/png" href="images/seal_favicon.png" />
 
+  <!-- Prevent flash of wrong theme -->
+  <script>
+    (function() {
+      const saved = localStorage.getItem('theme');
+      const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      document.documentElement.setAttribute('data-theme', saved || (prefersDark ? 'dark' : 'light'));
+    })();
+  </script>
+
   <link rel="stylesheet" href="css/styles.css" />
 
   <!-- Roboto Mono (for timestamp) -->
@@ -16,138 +25,268 @@
   />
 
   <style>
-    /* Add top padding to h1 */
-    h1 {
-      padding-top: 40px;
+    /* Animation easing curves (shared with styles.css) */
+    :root {
+      --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+      --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+      --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes floatIn {
+      from { opacity: 0; transform: translateY(20px) scale(0.96); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    
+    @keyframes gentleFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+    
+    /* Skip to main content link - accessibility */
+    .skip-to-main {
+      position: absolute;
+      left: -9999px;
+      top: auto;
+      width: 1px;
+      height: 1px;
+      overflow: hidden;
+      z-index: 9999;
     }
 
-    /* Tagline underneath subtitle */
-    .tagline {
-      margin-top: 6px;
-      margin-bottom: 28px;
-      font-size: 14px;
-      color: #7a7f87;
+    .skip-to-main:focus {
+      position: fixed;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: auto;
+      height: auto;
+      padding: 12px 24px;
+      background: var(--color-btn-primary-bg);
+      color: var(--color-btn-primary-text);
+      font-size: 16px;
+      font-family: "Georgia", serif;
+      text-decoration: none;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
 
-    /* Envelope wrapper center alignment */
-    .center-block {
-      text-align: center;
-      margin-top: 20px;
+    .hero-section {
       display: flex;
-      flex-direction: column;
       align-items: center;
-    }
-
-    .envelope-wrapper {
-      display: flex;
       justify-content: center;
-      align-items: center;
-      perspective: 1000px;
-      margin-bottom: 20px;
+      gap: 80px;
+      padding: 60px 40px;
+      min-height: 70vh;
+    }
+
+    .hero-image {
+      flex-shrink: 0;
     }
 
     .envelope {
-      width: 450px;
+      width: 380px;
       display: block;
-      filter: drop-shadow(0 12px 25px rgba(0,0,0,0.18));
-      transition: transform 0.2s ease;
+      filter: drop-shadow(0 18px 28px rgba(0, 0, 0, 0.12));
+      transition: transform 0.5s var(--ease-out-expo), filter 0.5s var(--ease-out-expo);
     }
 
-    /* Start button */
-    .start-btn {
+    .envelope:hover {
+      transform: translateY(-12px) rotate(-3deg) scale(1.02);
+      filter: drop-shadow(0 30px 50px rgba(0, 0, 0, 0.2));
+    }
+
+    .hero-content {
+      max-width: 440px;
+    }
+    
+    .hero-eyebrow {
       display: inline-block;
-      margin-top: 20px;
-      background: #fbf7f1;
-      padding: 10px 28px;
-      border-radius: 20px;
-      text-decoration: none;
-      color: #444;
-      font-size: 15px;
-      border: 1px solid #e5dfd6;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.08);
-      transition: all 0.15s ease;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--color-text-muted);
+      margin-bottom: 12px;
     }
 
-    .start-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 14px rgba(0,0,0,0.12);
+    .hero-content h1 {
+      font-size: 38px;
+      line-height: 1.25;
+      margin-bottom: 16px;
+      text-align: left;
+      font-weight: 500;
     }
 
-</style>
+    .hero-content .subtitle {
+      font-size: 16px;
+      color: var(--color-text-secondary);
+      margin-bottom: 32px;
+      text-align: left;
+      line-height: 1.6;
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .hero-view-link {
+      margin: 0;
+    }
+
+    @media (max-width: 900px) {
+      .hero-section {
+        flex-direction: column;
+        gap: 40px;
+        text-align: center;
+      }
+      .hero-eyebrow,
+      .hero-content h1,
+      .hero-content .subtitle {
+        text-align: center;
+      }
+      .hero-actions {
+        justify-content: center;
+      }
+    }
+  </style>
 </head>
 
 <body>
+  <!-- Skip to main content link for accessibility -->
+  <a href="#main-content" class="skip-to-main">Skip to main content</a>
 
-  <!-- Logo/Brand Navigation -->
-  <nav aria-label="Main navigation">
-    <a href="index.html" class="site-logo" aria-label="Quiet Letters home page">
-      <img src="images/seal_favicon.png" alt="Red wax seal with a heart" class="logo-icon" />
-      <span class="logo-text">Quiet Letters</span>
-    </a>
-  </nav>
+  <div class="app-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <a href="index.html" class="sidebar-logo">
+        <img src="images/seal_favicon.png" alt="Quiet Letters" />
+      </a>
+      
+      <nav class="sidebar-nav" aria-label="Main navigation">
+        <a href="index.html" class="active" title="Home" aria-label="Home">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12l8.954-8.955a1.126 1.126 0 011.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
+          </svg>
+        </a>
+        <a href="letter.html" title="Write Letter" aria-label="Write Letter">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+          </svg>
+        </a>
+        <a href="view.html" title="View Letters" aria-label="View Letters">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+          </svg>
+        </a>
+      </nav>
+      
+      <div class="sidebar-bottom">
+      </div>
+    </aside>
 
-  <main>
-    <div class="container">
-      <header>
-        <h1>Write a letter to yourself, in the future</h1>
-        <p class="subtitle">Open in 1 year, 5 years, or beyond</p>
+    <!-- Main Content -->
+    <main class="main-content" id="main-content" tabindex="-1">
+      <!-- Top Header -->
+      <header class="top-header">
+        <div class="search-container">
+          <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
+          <input type="text" class="search-input" id="searchInput" placeholder="Search your letters..." aria-label="Search letters" autocomplete="off">
+          <div class="search-suggestions" id="searchSuggestions" role="listbox" aria-label="Search suggestions"></div>
+        </div>
+        
+        <div class="header-right">
+          <div class="user-profile">
+            <div class="user-avatar">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="18" height="18">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
+            </div>
+            <span class="user-name">Guest</span>
+          </div>
+          <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+            <!-- Sun icon (shown in dark mode) -->
+            <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="22" height="22">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+            </svg>
+            <!-- Moon icon (shown in light mode) -->
+            <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" width="22" height="22">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z" />
+            </svg>
+          </button>
+        </div>
       </header>
 
-      <section aria-label="Get started">
-        <div class="center-block">
-          <div class="envelope-wrapper">
+      <!-- Page Content -->
+      <div class="page-content">
+        <section class="hero-section" aria-label="Welcome">
+          <div class="hero-image">
             <img
               src="images/Closed_Letter.png"
               alt="Closed envelope with wax seal ready to be opened"
               class="envelope"
             />
           </div>
-
-          <a href="letter.html" class="start-btn" aria-label="Start writing your letter">start</a>
-        </div>
-      </section>
-    </div>
-  </main>
-
-  <!-- Site Footer -->
-  <footer class="site-footer">
-    <nav aria-label="Footer navigation">
-      <div class="footer-links">
-        <!-- <a href="about.html">About</a> -->
-        <a href="https://kaitlyn.zip/" target="_blank" rel="noopener">My Website</a>
-        <a href="https://www.linkedin.com/in/kaitlyn-jang-9147071a1/" target="_blank" rel="noopener">LinkedIn</a>
+          
+          <div class="hero-content">
+            <span class="hero-eyebrow">Time Capsule Letters</span>
+            <h1>Write a letter to your future self</h1>
+            <p class="subtitle">
+              Seal your thoughts today and open them in 1 year, 5 years, or beyond. Your words become a gift to who you'll become.
+            </p>
+            <div class="hero-actions">
+              <a href="letter.html" class="start-btn" aria-label="Start writing your letter">
+                Start writing
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+                </svg>
+              </a>
+              <a href="view.html" class="view-link hero-view-link" aria-label="View all your sent letters">View letters</a>
+            </div>
+          </div>
+        </section>
       </div>
-    </nav>
-    <div class="footer-copyright">
-      © 2025 Quiet Letters
-    </div>
-  </footer>
+    </main>
+  </div>
 
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       /* ---------- Envelope tilt animation ---------- */
-      const wrapper = document.querySelector(".envelope-wrapper");
       const envelope = document.querySelector(".envelope");
 
-      if (wrapper && envelope) {
-        wrapper.addEventListener("mousemove", (event) => {
-          const rect = wrapper.getBoundingClientRect();
+      if (envelope) {
+        envelope.addEventListener("mousemove", (event) => {
+          const rect = envelope.getBoundingClientRect();
           const x = event.clientX - rect.left - rect.width / 2;
           const y = event.clientY - rect.top - rect.height / 2;
 
-          const rotateY = x / 20;
-          const rotateX = -y / 20;
+          const rotateY = x / 25;
+          const rotateX = -y / 25;
 
           envelope.style.transform =
             `rotateY(${rotateY}deg) rotateX(${rotateX}deg) translateY(-4px)`;
         });
 
-        wrapper.addEventListener("mouseleave", () => {
-          envelope.style.transform =
-            "rotateY(0deg) rotateX(0deg) translateY(0)";
+        envelope.addEventListener("mouseleave", () => {
+          envelope.style.transform = "translateY(0)";
         });
       }
     });
   </script>
+  <script src="js/search.js"></script>
+  <script src="js/theme.js"></script>
 </body>
 </html>
